@@ -1,30 +1,49 @@
-import { Box, Container, Typography, AppBar, Toolbar, Button } from '@mui/material';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Box, AppBar, Toolbar, Typography, Button, Container } from '@mui/material';
+import { AuthProvider, useAuth } from './services/auth';
+import Login from './pages/Auth/Login';
+import SubmitComplaint from './pages/Complaint/SubmitComplaint';
+
+function NavBar() {
+  const { user, signOut } = useAuth();
+
+  return (
+    <AppBar position="static">
+      <Toolbar>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          DakSamadhan-AI
+        </Typography>
+        {user ? (
+          <>
+            <Button color="inherit" onClick={() => window.location.href = '/submit-complaint'}>
+              Submit Complaint
+            </Button>
+            <Button color="inherit" onClick={signOut}>Logout</Button>
+          </>
+        ) : (
+          <Button color="inherit" href="/login">Login</Button>
+        )}
+      </Toolbar>
+    </AppBar>
+  );
+}
 
 function App() {
   return (
-    <Box sx={{ flexGrow: 1, minHeight: '100vh', bgcolor: 'background.default' }}>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            DakSamadhan-AI
-          </Typography>
-          <Button color="inherit">Login</Button>
-        </Toolbar>
-      </AppBar>
-      <Container maxWidth="lg" sx={{ mt: 4 }}>
-        <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
-          Welcome to DakSamadhan
-        </Typography>
-        <Typography variant="h5" color="text.secondary" paragraph>
-          AI-Powered Complaint Management System for Indian Post
-        </Typography>
-        <Box sx={{ mt: 4, p: 3, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 1 }}>
-          <Typography variant="body1">
-            System initialization in progress...
-          </Typography>
+    <AuthProvider>
+      <Router>
+        <Box sx={{ flexGrow: 1, minHeight: '100vh', bgcolor: 'background.default' }}>
+          <NavBar />
+          <Container maxWidth="lg" sx={{ mt: 4 }}>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/submit-complaint" element={<SubmitComplaint />} />
+              <Route path="/" element={<Navigate to="/submit-complaint" replace />} />
+            </Routes>
+          </Container>
         </Box>
-      </Container>
-    </Box>
+      </Router>
+    </AuthProvider>
   );
 }
 

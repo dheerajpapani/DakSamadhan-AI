@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.api.endpoints import complaints
 
 app = FastAPI(
     title="DakSamadhan-AI API",
@@ -15,6 +16,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(complaints.router, prefix="/api/complaints", tags=["complaints"])
 
 @app.get("/")
 async def root():
