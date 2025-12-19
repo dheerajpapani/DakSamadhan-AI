@@ -3,6 +3,7 @@ import { Box, AppBar, Toolbar, Typography, Button, Container } from '@mui/materi
 import { AuthProvider, useAuth } from './services/auth';
 import Login from './pages/Auth/Login';
 import SubmitComplaint from './pages/Complaint/SubmitComplaint';
+import Dashboard from './pages/Dashboard/Dashboard';
 
 function NavBar() {
   const { user, signOut } = useAuth();
@@ -38,6 +39,7 @@ function App() {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/submit-complaint" element={<SubmitComplaint />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/" element={<Navigate to="/submit-complaint" replace />} />
             </Routes>
           </Container>
