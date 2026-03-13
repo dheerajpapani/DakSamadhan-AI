@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="frontend/public/favicon.svg" alt="DakSamadhan Logo" width="100" />
+  <img src="frontend/public/ippb.avif" alt="DakSamadhan Logo" width="100" />
   
   # 🏢 DakSamadhan-AI
   
