@@ -22,7 +22,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     const citizenNav = [
         { label: 'Submit Complaint', path: '/submit-complaint' },
         { label: 'Track Status', path: '/track-status' },
-        { label: 'Help', path: '/help' },
     ];
 
     const staffNav = [
@@ -32,7 +31,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
     const publicNav = [
         { label: 'Track Status', path: '/track-status' },
-        { label: 'Help', path: '/help' },
     ];
 
     const navLinks = user

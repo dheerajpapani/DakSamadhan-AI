@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Box, Typography, Link, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 export default function Footer() {
+    const navigate = useNavigate();
     const [openPrivacy, setOpenPrivacy] = useState(false);
 
     return (
@@ -12,14 +14,35 @@ export default function Footer() {
                     <Typography variant="caption">Department of Posts, Government of India</Typography>
                 </Box>
                 <Box>
-                    <Link href="/" color="inherit" sx={{ mx: 2, textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>Home</Link>
-                    <Link href="/help" color="inherit" sx={{ mx: 2, textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>Help</Link>
-                    <Link href="/contact" color="inherit" sx={{ mx: 2, textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>Contact</Link>
+                    <Link
+                        component="button"
+                        color="inherit"
+                        onClick={() => navigate('/')}
+                        sx={{ mx: 2, textDecoration: 'none', fontFamily: 'inherit', fontSize: 'inherit', border: 0, bgcolor: 'transparent', cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+                    >
+                        Home
+                    </Link>
+                    <Link
+                        component="button"
+                        color="inherit"
+                        onClick={() => navigate('/help')}
+                        sx={{ mx: 2, textDecoration: 'none', fontFamily: 'inherit', fontSize: 'inherit', border: 0, bgcolor: 'transparent', cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+                    >
+                        Help
+                    </Link>
+                    <Link
+                        component="button"
+                        color="inherit"
+                        onClick={() => navigate('/contact')}
+                        sx={{ mx: 2, textDecoration: 'none', fontFamily: 'inherit', fontSize: 'inherit', border: 0, bgcolor: 'transparent', cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+                    >
+                        Contact
+                    </Link>
                     <Link
                         component="button"
                         color="inherit"
                         onClick={() => setOpenPrivacy(true)}
-                        sx={{ mx: 2, textDecoration: 'none', fontFamily: 'inherit', fontSize: 'inherit', border: 0, bgcolor: 'transparent', cursor: 'pointer' }}
+                        sx={{ mx: 2, textDecoration: 'none', fontFamily: 'inherit', fontSize: 'inherit', border: 0, bgcolor: 'transparent', cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
                     >
                         Privacy Policy
                     </Link>

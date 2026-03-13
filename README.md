@@ -1,12 +1,17 @@
 <div align="center">
-  <img src="frontend/public/ippb.avif" alt="DakSamadhan Logo" width="100" />
   
   # 🏢 DakSamadhan-AI
   
-  **Next-Generation AI Grievance Redressal System for Department of Posts**
+  **Next-Generation AI Grievance Redressal System**
 
   <p align="center">
-    <strong>Intelligent Categorization • Sentiment Analysis • Automated Prioritization</strong>
+    <strong>Intelligent Categorization • Urgency Analysis • Automated Prioritization</strong>
+  </p>
+
+  <p align="center">
+    <a href="https://dak-samadhan-ai.vercel.app"><strong>Live Frontend Portal »</strong></a>
+    &nbsp; • &nbsp;
+    <a href="https://daksamadhan-ai.onrender.com"><strong>API Documentation »</strong></a>
   </p>
 
   <p align="center">
@@ -14,7 +19,6 @@
     <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
     <img src="https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white" alt="Supabase" />
     <img src="https://img.shields.io/badge/Hugging_Face-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black" alt="Hugging Face" />
-    <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
   </p>
 </div>
 
