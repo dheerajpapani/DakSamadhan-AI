@@ -11,7 +11,7 @@
   <p align="center">
     <a href="https://dak-samadhan-ai.vercel.app"><strong>Live Frontend Portal »</strong></a>
     &nbsp; • &nbsp;
-    <a href="https://daksamadhan-ai.onrender.com"><strong>API Documentation »</strong></a>
+    <a href="https://daksamadhan-ai.onrender.com/docs"><strong>API Documentation »</strong></a>
   </p>
 
   <p align="center">
