@@ -1,43 +1,41 @@
+import os
+import httpx
 from typing import Dict
-from transformers import pipeline
-import asyncio
-from concurrent.futures import ThreadPoolExecutor
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class SentimentAnalyzer:
     def __init__(self):
-        self.executor = ThreadPoolExecutor(max_workers=1)
-        self.analyzer = None
-
-    def _load_model(self):
-        if not self.analyzer:
-            print("Loading Sentiment Model...")
-            # Explicitly using distilbert for speed
-            self.analyzer = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english")
-            print("Sentiment Model Loaded.")
+        self.api_url = "https://router.huggingface.co/hf-inference/models/distilbert-base-uncased-finetuned-sst-2-english"
+        self.api_key = os.getenv("HF_API_KEY")
+        self.headers = {"Authorization": f"Bearer {self.api_key}"}
 
     async def analyze(self, text: str) -> Dict[str, float]:
         """
-        Analyze sentiment of the text.
-        Returns sentiment score (-1 to 1) or labels.
+        Analyze sentiment of the text using HF Inference API.
         """
-        if not self.analyzer:
-            loop = asyncio.get_event_loop()
-            await loop.run_in_executor(self.executor, self._load_model)
+        if not self.api_key:
+            print("HF_API_KEY not found. Skipping sentiment analysis.")
+            return {"sentiment": "neutral", "score": 0.5}
 
-        loop = asyncio.get_event_loop()
-        result_list = await loop.run_in_executor(
-            self.executor, 
-            lambda: self.analyzer(text)
-        )
-        
-        # Result format: [{'label': 'POSITIVE', 'score': 0.99}]
-        result = result_list[0]
-        
-        label = result['label'].lower() # 'positive' or 'negative'
-        score = result['score']
-        
-        # Normalize score to be somewhat aligned with our previous logic if needed,
-        # but returning raw label/score is fine.
-        return {"sentiment": label, "score": score}
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.post(self.api_url, headers=self.headers, json={"inputs": text})
+                
+                if response.status_code == 200:
+                    result_list = response.json()
+                    # Result format: [[{'label': 'POSITIVE', 'score': 0.99}]]
+                    result = result_list[0][0] if isinstance(result_list[0], list) else result_list[0]
+                    
+                    label = result['label'].lower()
+                    score = result['score']
+                    return {"sentiment": label, "score": score}
+                else:
+                    print(f"HF API Error ({response.status_code}): {response.text}")
+                    return {"sentiment": "neutral", "score": 0.5}
+        except Exception as e:
+            print(f"HF API Request failed: {e}")
+            return {"sentiment": "neutral", "score": 0.5}
 
 analyzer = SentimentAnalyzer()

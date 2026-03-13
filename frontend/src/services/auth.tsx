@@ -1,10 +1,13 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, Session } from '@supabase/supabase-js';
+import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from './supabase';
+
+type UserRole = 'citizen' | 'official' | null;
 
 interface AuthContextType {
     user: User | null;
     session: Session | null;
+    role: UserRole;
     loading: boolean;
     signOut: () => Promise<void>;
 }
@@ -16,18 +19,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(true);
 
+    const extractRole = (u: User | null): UserRole => {
+        if (!u) return null;
+        const r = u.user_metadata?.role;
+        if (r === 'official') return 'official';
+        return 'citizen'; // default — any logged-in user without role is citizen
+    };
+
     useEffect(() => {
-        // Get initial session
         supabase.auth.getSession().then(({ data: { session } }) => {
             setSession(session);
             setUser(session?.user ?? null);
             setLoading(false);
         });
 
-        // Listen for auth changes
-        const {
-            data: { subscription },
-        } = supabase.auth.onAuthStateChange((_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setSession(session);
             setUser(session?.user ?? null);
             setLoading(false);
@@ -41,17 +47,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     return (
-        <AuthContext.Provider value= {{ user, session, loading, signOut }
-}>
-    { children }
-    </AuthContext.Provider>
-  );
+        <AuthContext.Provider value={{ user, session, role: extractRole(user), loading, signOut }}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
-    if (context === undefined) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
+    if (context === undefined) throw new Error('useAuth must be used within an AuthProvider');
     return context;
 };

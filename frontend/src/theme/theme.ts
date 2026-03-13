@@ -8,15 +8,15 @@ const theme = createTheme({
     palette: {
         mode: 'light', // Can be toggled later
         primary: {
-            main: '#1a237e', // Deep Indigo (Trust, Government)
-            light: '#534bae',
-            dark: '#000051',
+            main: '#800000', // Maroon (Government Style)
+            light: '#b71c1c',
+            dark: '#5a0000',
             contrastText: '#ffffff',
         },
         secondary: {
-            main: '#ff6f00', // Amber (Actionable, Indian Post link)
-            light: '#ffa040',
-            dark: '#c43e00',
+            main: '#ffc107', // Amber/Gold
+            light: '#fff350',
+            dark: '#c79100',
             contrastText: '#000000',
         },
         background: {

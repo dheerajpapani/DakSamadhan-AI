@@ -1,48 +1,80 @@
-from typing import Dict
-from transformers import pipeline
-import asyncio
-from concurrent.futures import ThreadPoolExecutor
+import os
+import httpx
+from typing import Dict, List
+from dotenv import load_dotenv
+
+load_dotenv()
 
 class ComplaintClassifier:
     def __init__(self):
-        # Initialize pipeline lazily or on startup
-        # We use a ThreadPoolExecutor to run blocking HF code in async context
-        self.executor = ThreadPoolExecutor(max_workers=1)
-        self.classifier = None
-
-    def _load_model(self):
-        if not self.classifier:
-            print("Loading Classification Model...")
-            # Using distilbart-mnli-12-1 for speed/resource efficiency as requested
-            self.classifier = pipeline("zero-shot-classification", model="valhalla/distilbart-mnli-12-1")
-            print("Classification Model Loaded.")
+        self.api_url = "https://router.huggingface.co/hf-inference/models/facebook/bart-large-mnli"
+        self.api_key = os.getenv("HF_API_KEY")
+        self.headers = {"Authorization": f"Bearer {self.api_key}"}
 
     async def predict(self, text: str) -> Dict[str, float]:
         """
-        Predict the category of the complaint.
+        Predict the category of the complaint using HF Inference API.
         """
-        if not self.classifier:
-            loop = asyncio.get_event_loop()
-            await loop.run_in_executor(self.executor, self._load_model)
+        if not self.api_key:
+            print("HF_API_KEY not found. Skipping AI analysis.")
+            return {"Other": 1.0}
 
         candidate_labels = [
             'Delivery Delay', 
             'Lost Article', 
             'Damaged Item', 
+            'Missing Contents',
+            'Fraudulent Activity',
             'Staff Behavior', 
             'Refund Issue', 
             'Other'
         ]
 
-        loop = asyncio.get_event_loop()
-        # Run synchronous pipeline in thread pool
-        result = await loop.run_in_executor(
-            self.executor, 
-            lambda: self.classifier(text, candidate_labels)
-        )
+        payload = {
+            "inputs": text,
+            "parameters": {"candidate_labels": candidate_labels}
+        }
+
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.post(self.api_url, headers=self.headers, json=payload)
+                
+                if response.status_code == 200:
+                    result = response.json()
+                    return dict(zip(result['labels'], result['scores']))
+                else:
+                    print(f"HF API Error ({response.status_code}): {response.text}")
+                    return {"Other": 1.0}
+        except Exception as e:
+            print(f"HF API Request failed: {e}")
+            return {"Other": 1.0}
+
+    async def analyze_urgency(self, text: str) -> str:
+        """
+        Secondary pass to determine the urgency/criticality of the issue.
+        Returns: 'Critical', 'Urgent', or 'Normal'
+        """
+        if not self.api_key:
+            return "Normal"
+
+        candidate_labels = ['Critical', 'Urgent', 'Normal']
         
-        # Result format: {'sequence': '...', 'labels': [...], 'scores': [...]}
-        # Convert to dict {label: score}
-        return dict(zip(result['labels'], result['scores']))
+        payload = {
+            "inputs": text,
+            "parameters": {"candidate_labels": candidate_labels}
+        }
+
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.post(self.api_url, headers=self.headers, json=payload)
+                
+                if response.status_code == 200:
+                    result = response.json()
+                    # The highest score label is at result['labels'][0]
+                    return result['labels'][0]
+                else:
+                    return "Normal"
+        except Exception:
+            return "Normal"
 
 classifier = ComplaintClassifier()

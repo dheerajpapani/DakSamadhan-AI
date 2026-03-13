@@ -1,7 +1,8 @@
 fastapi
 uvicorn
-transformers
-torch
-langdetect
 python-multipart
+httpx
 requests
+supabase
+python-jose[cryptography]
+python-dotenv
